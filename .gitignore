@@ -1,0 +1,17 @@
+target/
+bin/
+.svn/
+.classpath
+.project
+.settings
+MANIFEST.MF
+deploy.sh
+*.class
+*.dll
+*.exe
+*.o
+*.so
+jdbc.properties
+logs/
+.DS_Store
+iscript-core/iscript-core-tasker/src/main/resources/db/
