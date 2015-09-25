@@ -1,4 +1,4 @@
-package com.lezo.mall.blade;
+package com.lezo.mall.blade.require.top.worker;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,9 +13,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.lezo.mall.blade.require.top.po.CategoryElement;
+
 public class AmazonBestSaleListWorker implements Runnable {
     private Logger log = Logger.getLogger(AmazonBestSaleListWorker.class);
-    private static String CODE_SEPERATOR = "->";
+    public static String CODE_SEPERATOR = "->";
     private CategoryElement element;
     private File destFile;
 

@@ -1,10 +1,13 @@
-package com.lezo.mall.blade;
+package com.lezo.mall.blade.require.top;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import lombok.extern.log4j.Log4j;
 
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
@@ -12,14 +15,23 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.lezo.mall.blade.require.top.po.CategoryElement;
+import com.lezo.mall.blade.require.top.worker.AmazonBestSaleSkuWorker;
+
+@Log4j
 public class AmazonBestSaleSkuMain {
     private static String CODE_SEPERATOR = "->";
 
     public static void main(String[] args) throws Exception {
-        String dirPath = "./data/amazon/top/sku/";
+        String srcPath = System.getProperty("src", "./data/amazon/top/cate/");
+        String destPath = System.getProperty("dest", "./data/amazon/top/sku/");
         long startMills = System.currentTimeMillis();
-        File dirFile = new File(dirPath);
-        for (File dataFile : dirFile.listFiles()) {
+        File srcFile = new File(srcPath);
+        File[] srcFiles = srcFile.listFiles();
+        int total = srcFiles.length;
+        int count = 0;
+        int urlCount = 0;
+        for (File dataFile : srcFiles) {
             ThreadPoolExecutor exec = (ThreadPoolExecutor) Executors.newFixedThreadPool(5);
             List<String> urlList = FileUtils.readLines(dataFile, "UTF-8");
             for (String line : urlList) {
@@ -29,12 +41,27 @@ public class AmazonBestSaleSkuMain {
                 String cateName = unitArr[++index];
                 String level = unitArr[++index];
                 String crumb = unitArr[++index];
-                exec.execute(new AmazonBestSaleSkuWorker(crumb, cateName, cateUrl, level, dirPath));
-                return;
+                AmazonBestSaleSkuWorker worker = new AmazonBestSaleSkuWorker(crumb, cateName,
+                        cateUrl, level, destPath);
+                exec.execute(worker);
+                urlCount++;
             }
+            waitForDone(exec);
+            count++;
+            log.info("file total:" + total + ",done:" + count + ".urlCount:" + urlCount);
         }
         long costMills = System.currentTimeMillis() - startMills;
-        System.err.println("done......cost:" + costMills);
+        log.info("done......cost:" + costMills);
+    }
+
+    private static void waitForDone(ThreadPoolExecutor exec) throws Exception {
+        exec.shutdown();
+        while (!exec.isTerminated()) {
+            System.err.println("active:" + exec.getActiveCount() + ",done:"
+                    + exec.getCompletedTaskCount() + ",queue:" + exec.getQueue().size());
+            TimeUnit.SECONDS.sleep(1);
+        }
+
     }
 
     public static void getLeafs(CategoryElement cce, List<CategoryElement> leafList) {

@@ -1,4 +1,4 @@
-package com.lezo.mall.blade;
+package com.lezo.mall.blade.require.top.po;
 
 import java.util.List;
 

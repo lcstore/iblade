@@ -1,4 +1,4 @@
-package com.lezo.mall.blade;
+package com.lezo.mall.blade.require.top;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,18 +14,22 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.lezo.mall.blade.require.top.po.CategoryElement;
+import com.lezo.mall.blade.require.top.worker.AmazonBestSaleListWorker;
+
 public class AmazonBestSaleListMain {
 
     public static void main(String[] args) throws Exception {
-        String dirPath = "./data/amazon/top/cate/";
-        boolean skipDone = false;
+        String dirPath = System.getProperty("dir", "./data/amazon/top/cate/");
+        String skipString = System.getProperty("skip", "false");
+        boolean skipDone = "true".equals(skipString) ? true : false;
         String url = "http://www.amazon.cn/gp/bestsellers/ref=zg_bs_unv_cps_0_665021051_3";
         long startMills = System.currentTimeMillis();
         Document dom = Jsoup.connect(url).get();
         Elements ceEls =
                 dom.select("#zg_browseRoot ul li a[href*=www.amazon.cn/gp/bestsellers]:not(a:matchesOwn([图书]))");
         List<CategoryElement> cElements = new ArrayList<CategoryElement>();
-        Set<String> doneSet = getDoneSet(dirPath);
+        Set<String> doneSet = getDoneSet(new File(dirPath));
         ThreadPoolExecutor exec = (ThreadPoolExecutor) Executors.newFixedThreadPool(5);
         for (Element ce : ceEls) {
             CategoryElement element = new CategoryElement();
@@ -53,8 +57,7 @@ public class AmazonBestSaleListMain {
         System.err.println("done......cost:" + costMills);
     }
 
-    private static Set<String> getDoneSet(String dirPath) {
-        File file = new File(dirPath);
+    private static Set<String> getDoneSet(File file) {
         Set<String> doneSet = new HashSet<String>();
         for (File f : file.listFiles()) {
             String name = f.getName();
