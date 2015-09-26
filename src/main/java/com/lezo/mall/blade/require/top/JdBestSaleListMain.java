@@ -15,28 +15,35 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.lezo.mall.blade.require.top.po.CategoryElement;
-import com.lezo.mall.blade.require.top.worker.AmazonBestSaleListWorker;
+import com.lezo.mall.blade.require.top.worker.JdBestSaleListWorker;
 
-public class AmazonBestSaleListMain {
+public class JdBestSaleListMain {
 
     public static void main(String[] args) throws Exception {
-        String destPath = System.getProperty("dest", "./data/amazon/top/cate/");
-        String skipString = System.getProperty("skip", "false");
+        String destPath = System.getProperty("dest", "./data/jd/top/cate/");
+        String skipString = System.getProperty("skip", "true");
         boolean skipDone = "true".equals(skipString) ? true : false;
-        String url = "http://www.amazon.cn/gp/bestsellers/ref=zg_bs_unv_cps_0_665021051_3";
+        String url = "http://www.jd.com/allSort.aspx";
         long startMills = System.currentTimeMillis();
         Document dom = Jsoup.connect(url).get();
-        Elements ceEls =
-                dom.select("#zg_browseRoot ul li a[href*=www.amazon.cn/gp/bestsellers]:not(a:matchesOwn([图书]))");
+        Elements ceEls = dom.select("#allsort.w div[id^=JDS_].m");
         List<CategoryElement> cElements = new ArrayList<CategoryElement>();
         Set<String> doneSet = getDoneSet(new File(destPath));
         ThreadPoolExecutor exec = (ThreadPoolExecutor) Executors.newFixedThreadPool(5);
         for (Element ce : ceEls) {
+            Elements ctEls = ce.select("div.mt h2 a");
             CategoryElement element = new CategoryElement();
-            element.setName(ce.ownText().trim());
-            element.setUrl(ce.absUrl("href"));
-            element.setLevel(1);
-            element.setCode(element.getName());
+            if (ctEls.size() > 1) {
+                element.setName(ctEls.text().trim());
+                element.setUrl("");
+                element.setLevel(1);
+                element.setCode(element.getName());
+            } else {
+                element.setName(ctEls.first().text().trim());
+                element.setUrl(ctEls.first().absUrl("href"));
+                element.setLevel(1);
+                element.setCode(element.getName());
+            }
             cElements.add(element);
             if (!skipDone && doneSet.contains(element.getName())) {
                 System.err.println("had done:" + element.getName());
@@ -45,7 +52,8 @@ public class AmazonBestSaleListMain {
             String fileName =
                     cElements.size() + "_" + element.getName().trim().replace("/", "-") + ".txt";
             File destFile = new File(destPath, fileName);
-            exec.execute(new AmazonBestSaleListWorker(destFile, element));
+            JdBestSaleListWorker worker = new JdBestSaleListWorker(destFile, element, ce);
+            exec.execute(worker);
         }
         exec.shutdown();
         while (!exec.isTerminated()) {
@@ -54,7 +62,8 @@ public class AmazonBestSaleListMain {
             TimeUnit.SECONDS.sleep(1);
         }
         long costMills = System.currentTimeMillis() - startMills;
-        System.err.println("done......cost:" + costMills);
+        float minutes = costMills * 1F / 1000 / 60;
+        System.err.println("done......cost:" + costMills + ",minutes:" + minutes);
     }
 
     private static Set<String> getDoneSet(File file) {
