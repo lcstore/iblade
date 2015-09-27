@@ -28,6 +28,9 @@ public class AmazonBestSaleSkuMain {
         long startMills = System.currentTimeMillis();
         File srcFile = new File(srcPath);
         File[] srcFiles = srcFile.listFiles();
+        if (srcFiles == null) {
+            throw new RuntimeException("no source in path,check src path:" + srcPath);
+        }
         int total = srcFiles.length;
         int count = 0;
         int urlCount = 0;
