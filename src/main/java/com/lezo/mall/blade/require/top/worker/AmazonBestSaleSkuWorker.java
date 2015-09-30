@@ -87,12 +87,13 @@ public class AmazonBestSaleSkuWorker implements Runnable {
         }
 
         String fileName = crumb.trim().replace("\\/", "-").replace(AmazonBestSaleListWorker.CODE_SEPERATOR, "_");
+        fileName = Math.abs(fileName.hashCode()) + "_" + System.currentTimeMillis() + ".txt";
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(Inclusion.NON_NULL);
         // 不序列化null
         try {
             String dataString = mapper.writeValueAsString(totalList);
-            File destFile = new File(dirPath, fileName + ".txt");
+            File destFile = new File(dirPath, fileName);
             FileUtils.writeStringToFile(destFile, dataString, "UTF-8");
             log.info("fetch cate:" + cateName + ",level:" + level + ",count:" + totalList.size()
                     + ",toFile:" + destFile);

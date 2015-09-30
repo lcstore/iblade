@@ -1,12 +1,18 @@
 #!/bin/bash
 # srcDir,destFile
 function merge_data(){
-    src_dir= $1
-    dest_file= $2
-	filelist=`ls $src_dir`
-	for file in $filelist
-	do 
-	 cat $file > $dest_file
+	INIT_PATH=$1
+	OUT_PATH=$2
+	for file in `ls $INIT_PATH`
+	do
+	   if [[ -d $INIT_PATH"/"$file ]]; then
+	   	 #statements
+	   	 local path=$INIT_PATH"/"$file #得到文件的完整的目录
+	   else
+	   	 local path=$INIT_PATH"/"$file #得到文件的完整的目录
+	     local name=$file       #得到文件的名字
+	     cat $path >> $OUT_PATH
+	   fi
 	done
 }
 v_date=`date +%Y%m%d --date="-0 day"`
@@ -31,7 +37,7 @@ fi
 JAR_DIR=$PWD"/blade.jar"
 CATE_DEST_PATH=$PWD"/data/"$v_date"/"$v_site"/top/cate/"
 SKU_DEST_PATH=$PWD"/data/"$v_date"/"$v_site"/top/sku/"
-DEST_DATA_FILE=$PWD"/data/"$v_site".sale.top."$v_date".data"
+DEST_DATA_FILE=$PWD"/data/"$v_date"/"$v_site".sale.top."$v_date".data"
 
 CATE_LOG_PATH=$PWD"/logs/"$v_site".cate."$v_date".out"
 SKU_LOG_PATH=$PWD"/logs/"$v_site".sku."$v_date".out"
@@ -40,7 +46,6 @@ echo $EXEC_CMD
 eval $EXEC_CMD
 JOB_STATUS=$?
 if [[ $JOB_STATUS -ne 0 ]]; then
-	handle_ret JOB_STATUS
 	echo -e "exec cate fail:$JOB_STATUS,ready to exit..."
 	exit 1;
 fi
@@ -50,17 +55,16 @@ echo $EXEC_CMD
 eval $EXEC_CMD
 JOB_STATUS=$?
 if [[ $JOB_STATUS -ne 0 ]]; then
-	handle_ret JOB_STATUS
 	echo -e "exec sku fail:$JOB_STATUS,ready to exit..."
 	exit 1;
 fi
+echo "" > $DEST_DATA_FILE
 EXEC_CMD="merge_data $SKU_DEST_PATH $DEST_DATA_FILE"
 echo $EXEC_CMD
 eval $EXEC_CMD
 JOB_STATUS=$?
 if [[ $JOB_STATUS -ne 0 ]]; then
-	handle_ret JOB_STATUS
-	echo -e "exec sku fail:$JOB_STATUS,ready to exit..."
+	echo -e "exec merge_data fail:$JOB_STATUS,ready to exit..."
 	exit 1;
 fi
 echo "done v_site:"$v_site",v_date:"$v_date
