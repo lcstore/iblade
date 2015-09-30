@@ -61,7 +61,7 @@ public class JdBestSaleSkuMain {
     private static void waitForDone(ThreadPoolExecutor exec) throws Exception {
         exec.shutdown();
         while (!exec.isTerminated()) {
-            System.err.println("active:" + exec.getActiveCount() + ",done:"
+            log.info("active:" + exec.getActiveCount() + ",done:"
                     + exec.getCompletedTaskCount() + ",queue:" + exec.getQueue().size());
             TimeUnit.SECONDS.sleep(1);
         }

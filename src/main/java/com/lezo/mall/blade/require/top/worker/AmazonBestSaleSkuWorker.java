@@ -24,6 +24,7 @@ import com.lezo.mall.blade.require.top.po.TopBucket;
 public class AmazonBestSaleSkuWorker implements Runnable {
     private Logger log = Logger.getLogger(AmazonBestSaleSkuWorker.class);
     private static final Pattern NUM_REG = Pattern.compile("[0-9]+");
+    private static final Pattern PRICE_REG = Pattern.compile("[0-9.]+");
     private String crumb;
     private String cateName;
     private String cateUrl;
@@ -139,9 +140,10 @@ public class AmazonBestSaleSkuWorker implements Runnable {
             // 无价格，则为：目前无货，欢迎选购其他类似产品
             if (!priceEls.isEmpty()) {
                 String sPrice = priceEls.first().ownText();
-                sPrice = sPrice.replaceAll("￥", "");
-                sPrice = sPrice.replaceAll(",", "");
-                topBucket.setPrice(Float.valueOf(sPrice.trim()));
+                Matcher matcher = PRICE_REG.matcher(sPrice);
+                if (matcher.find()) {
+                    topBucket.setPrice(Float.valueOf(matcher.group()));
+                }
             }
             Elements titleEls = dom.select("div.zg_title a[href]");
             topBucket.setProductUrl(titleEls.first().absUrl("href").trim());

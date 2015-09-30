@@ -9,6 +9,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import lombok.extern.log4j.Log4j;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,6 +19,7 @@ import org.jsoup.select.Elements;
 import com.lezo.mall.blade.require.top.po.CategoryElement;
 import com.lezo.mall.blade.require.top.worker.JdBestSaleListWorker;
 
+@Log4j
 public class JdBestSaleListMain {
 
     public static void main(String[] args) throws Exception {
@@ -46,7 +49,7 @@ public class JdBestSaleListMain {
             }
             cElements.add(element);
             if (!skipDone && doneSet.contains(element.getName())) {
-                System.err.println("had done:" + element.getName());
+                log.info("had done:" + element.getName());
                 continue;
             }
             String fileName =
@@ -57,13 +60,13 @@ public class JdBestSaleListMain {
         }
         exec.shutdown();
         while (!exec.isTerminated()) {
-            System.err.println("active:" + exec.getActiveCount() + ",done:"
+            log.info("active:" + exec.getActiveCount() + ",done:"
                     + exec.getCompletedTaskCount() + ",queue:" + exec.getQueue().size());
             TimeUnit.SECONDS.sleep(1);
         }
         long costMills = System.currentTimeMillis() - startMills;
         float minutes = costMills * 1F / 1000 / 60;
-        System.err.println("done......cost:" + costMills + ",minutes:" + minutes);
+        log.info("done......cost:" + costMills + ",minutes:" + minutes);
     }
 
     private static Set<String> getDoneSet(File file) {
