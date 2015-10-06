@@ -1,17 +1,24 @@
 #!/bin/bash
+. ~/.bash_profile
+echo "JAVA_HOME:"$JAVA_HOME
 # srcDir,destFile
 function merge_data(){
 	INIT_PATH=$1
 	OUT_PATH=$2
+	echo "start to merge data in dir:"$INIT_PATH
 	for file in `ls $INIT_PATH`
 	do
 	   if [[ -d $INIT_PATH"/"$file ]]; then
-	   	 #statements
+	   	  local name=$file
+	    else
 	   	 local path=$INIT_PATH"/"$file #得到文件的完整的目录
-	   else
-	   	 local path=$INIT_PATH"/"$file #得到文件的完整的目录
-	     local name=$file       #得到文件的名字
-	     cat $path >> $OUT_PATH
+	     local name=$file       #得到文件的名字	     
+	     if [[ $path =~ ".txt" ]]; then
+	     	 echo "cat path:"$path
+	         cat $path >> $OUT_PATH
+	      else
+	      	 echo "warn path:"$path
+	     fi
 	   fi
 	done
 }
@@ -65,6 +72,7 @@ eval $EXEC_CMD
 JOB_STATUS=$?
 if [[ $JOB_STATUS -ne 0 ]]; then
 	echo -e "exec merge_data fail:$JOB_STATUS,ready to exit..."
+	rm -rf $DEST_DATA_FILE
 	exit 1;
 fi
 echo "done v_site:"$v_site",v_date:"$v_date
