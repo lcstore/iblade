@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
@@ -37,7 +38,7 @@ public class JdBestSaleSkuWorker implements Runnable {
     private String cateUrl;
     private String level;
     private String dirPath;
-    private Integer siteId = 1001;
+    private Integer siteId = 10000;
     private int maxRetry = 5;
 
     public JdBestSaleSkuWorker(String crumb, String cateName, String cateUrl, String level, String dirPath) {
@@ -118,10 +119,15 @@ public class JdBestSaleSkuWorker implements Runnable {
         // 不序列化null
         try {
             String dataString = mapper.writeValueAsString(totalList);
-            File destFile = new File(dirPath, fileName);
-            FileUtils.writeStringToFile(destFile, dataString, "UTF-8");
-            log.info("fetch cate:" + cateName + ",level:" + level + ",count:" + totalList.size()
-                    + ",toFile:" + destFile);
+            if (StringUtils.isNotBlank(dataString)) {
+                dataString += "\n";
+                File destFile = new File(dirPath, fileName);
+                FileUtils.writeStringToFile(destFile, dataString, "UTF-8");
+                log.info("fetch cate:" + cateName + ",level:" + level + ",count:" + totalList.size()
+                        + ",toFile:" + destFile + ",len:" + dataString.length());
+            } else {
+                log.warn("fetch empty.cate:" + cateName + ",level:" + level + ",count:" + totalList.size());
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

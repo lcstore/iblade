@@ -5,11 +5,24 @@ echo "JAVA_HOME:"$JAVA_HOME
 function merge_data(){
 	INIT_PATH=$1
 	OUT_PATH=$2
-	
 	cd $INIT_PATH
 	echo "start to merge data in dir:"$PWD
-	cat *.txt > $OUT_PATH
-	
+
+	for file in `ls *.txt`
+	do
+	   if [ -s $file ]; then
+	   	 local name=$file
+	   	 local path=$INIT_PATH$file #得到文件的完整的目录
+	     local name=$file       #得到文件的名字	     
+	     if [[ $path =~ ".txt" ]]; then
+	     	 echo "cat path:"$path
+	         cat $file  >> $OUT_PATH
+	         echo '\n' >> $OUT_PATH
+	      else
+	      	 echo "warn path:"$path
+	     fi
+	   fi
+	done	
 }
 v_date=`date +%Y%m%d --date="-0 day"`
 if [[ $# -lt 1 ]]; then
