@@ -139,9 +139,9 @@ public class AmazonBestSaleSkuWorker implements Runnable {
                 topBucket.setCommonNum(curNum);
             }
             topBucket.setFetchTime(fetchDate);
-            Elements priceEls = dom.select("p.priceBlock:contains(特价) span.price b");
+            Elements priceEls = ele.select("p.priceBlock:contains(特价) span.price b");
             if (priceEls.isEmpty()) {
-                priceEls = dom.select("p.priceBlock:contains(价格) span.price b");
+                priceEls = ele.select("p.priceBlock:contains(价格) span.price b");
             }
             // 无价格，则为：目前无货，欢迎选购其他类似产品
             if (!priceEls.isEmpty()) {
@@ -151,9 +151,11 @@ public class AmazonBestSaleSkuWorker implements Runnable {
                     topBucket.setPrice(Float.valueOf(matcher.group()));
                 }
             }
-            Elements titleEls = dom.select("div.zg_title a[href]");
-            topBucket.setProductUrl(titleEls.first().absUrl("href").trim());
-            topBucket.setTitle(titleEls.first().ownText());
+            Elements titleEls = ele.select("div.zg_title a[href]");
+            if (!titleEls.isEmpty()) {
+                topBucket.setProductUrl(titleEls.first().absUrl("href").trim());
+                topBucket.setTitle(titleEls.first().ownText());
+            }
             topBucket.setSiteId(siteId);
             dataList.add(topBucket);
         }
