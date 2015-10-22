@@ -25,6 +25,15 @@ if [[ $v_site"x" == "jdx" ]]; then
 elif [[ $v_site"x" == "amazonx" ]]; then
 	CATE_CLASS="com.lezo.mall.blade.require.top.AmazonBestSaleListMain"
     SKU_CLASS="com.lezo.mall.blade.require.top.AmazonBestSaleSkuMain"
+elif [[ $v_site"x" == "yhdx" ]]; then
+	CATE_CLASS="com.lezo.mall.blade.require.top.YhdBestSaleListMain"
+    SKU_CLASS="com.lezo.mall.blade.require.top.YhdBestSaleSkuMain"
+elif [[ $v_site"x" == "yixunx" ]]; then
+	CATE_CLASS="com.lezo.mall.blade.require.top.YixunBestSaleListMain"
+    SKU_CLASS="com.lezo.mall.blade.require.top.YixunBestSaleSkuMain"
+elif [[ $v_site"x" == "suningx" ]]; then
+	CATE_CLASS="com.lezo.mall.blade.require.top.SuningBestSaleListMain"
+    SKU_CLASS="com.lezo.mall.blade.require.top.SuningBestSaleSkuMain"
 else
    echo "input a correct site,unkwon site:"$v_site
    exit 1
@@ -63,5 +72,5 @@ if [[ $JOB_STATUS -ne 0 ]]; then
 	rm -rf $DEST_DATA_FILE
 	exit 1;
 fi
-echo "done v_site:"$v_site",v_date:"$v_date
+echo "done v_site:"$v_site",v_date:"$v_date",done:"`date`
 ls -l $DEST_DATA_FILE | awk '{ print "file:"$9,",len:"$5 }'
