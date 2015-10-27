@@ -191,7 +191,7 @@ public class SuningBestSaleSkuWorker implements Runnable {
             Elements cmmEls = ele.select("a.comment span.com-cnt:contains(评论)");
             if (!cmmEls.isEmpty()) {
                 Integer cmmNum = toNum(cmmEls.first().ownText());
-                topBucket.setCommonNum(cmmNum);
+                topBucket.setCommentNum(cmmNum);
             }
             topBucket.setFetchTime(fetchDate);
             Elements titleEls = ele.select("div.i-name a[name][title][href][target]");

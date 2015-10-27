@@ -21,7 +21,7 @@ public class TopBucket {
     // 排名（期望是全局排名，比如第二页的第一个，那应该是排名61，在一页60的情况下）
     private Integer rankNum;
     // 评论数
-    private Integer commonNum;
+    private Integer commentNum;
     // 价格（折扣价）
     private Float price;
     // 标题

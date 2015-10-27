@@ -237,7 +237,7 @@ public class YhdBestSaleSkuWorker implements Runnable {
             Elements cmmEls = ele.select("span.comment a[id^=pdlinkcomment_]");
             if (!cmmEls.isEmpty()) {
                 Integer cmmNum = toNum(cmmEls.first().ownText());
-                topBucket.setCommonNum(cmmNum);
+                topBucket.setCommentNum(cmmNum);
             }
             topBucket.setFetchTime(fetchDate);
             Elements priceEls = ele.select("p.proPrice em[id^=price]");

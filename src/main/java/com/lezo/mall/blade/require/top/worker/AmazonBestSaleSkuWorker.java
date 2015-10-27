@@ -136,7 +136,7 @@ public class AmazonBestSaleSkuWorker implements Runnable {
             Elements cmmEls = ele.select("div.zg_reviews span.crAvgStars a");
             if (!cmmEls.isEmpty()) {
                 curNum = toNum(cmmEls.first().ownText());
-                topBucket.setCommonNum(curNum);
+                topBucket.setCommentNum(curNum);
             }
             topBucket.setFetchTime(fetchDate);
             Elements priceEls = ele.select("p.priceBlock:contains(特价) span.price b");

@@ -211,7 +211,7 @@ public class JdBestSaleSkuWorker implements Runnable {
             Elements cmmEls = ele.select("div.p-commit");
             if (!cmmEls.isEmpty()) {
                 curNum = toNum(cmmEls.first().text());
-                topBucket.setCommonNum(curNum);
+                topBucket.setCommentNum(curNum);
             }
             topBucket.setFetchTime(fetchDate);
             Elements priceEls = ele.select("div.p-price strong.J_price");

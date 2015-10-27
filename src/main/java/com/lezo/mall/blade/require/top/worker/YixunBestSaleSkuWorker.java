@@ -177,7 +177,7 @@ public class YixunBestSaleSkuWorker implements Runnable {
             Elements cmmEls = ele.select("span.goods_comments a:contains(评论)");
             if (!cmmEls.isEmpty()) {
                 curNum = toNum(cmmEls.first().text());
-                topBucket.setCommonNum(curNum);
+                topBucket.setCommentNum(curNum);
             }
             topBucket.setFetchTime(fetchDate);
             Elements priceEls = ele.select("p.mod_goods_price span.mod_price span");
