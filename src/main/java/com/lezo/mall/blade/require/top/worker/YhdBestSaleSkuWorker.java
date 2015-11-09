@@ -79,6 +79,7 @@ public class YhdBestSaleSkuWorker implements Runnable {
         List<TopBucket> totalList = new ArrayList<TopBucket>();
         int curNum = 1;
         int maxRank = 60;
+        // cateUrl = "http://list.yhd.com/c6626-0-84389//";
         while (true) {
             String sUrl = cateUrl;
             sUrl = turnUrl(sUrl);
@@ -222,7 +223,7 @@ public class YhdBestSaleSkuWorker implements Runnable {
     }
 
     private List<TopBucket> getDataList(Document dom) {
-        Elements rowEls = dom.select("div[id^=producteg].mod_search_pro");
+        Elements rowEls = dom.select("div[id^=producteg].mod_search_pro,[id^=producteg].search_item");
         if (rowEls.isEmpty()) {
             return Collections.emptyList();
         }
@@ -234,21 +235,21 @@ public class YhdBestSaleSkuWorker implements Runnable {
             topBucket.setFromUrl(cateUrl);
             topBucket.setCrumb(this.crumb);
             topBucket.setPageNum(pageNum);
-            Elements cmmEls = ele.select("span.comment a[id^=pdlinkcomment_]");
+            Elements cmmEls = ele.select("a[id^=pdlinkcomment_]");
             if (!cmmEls.isEmpty()) {
                 Integer cmmNum = toNum(cmmEls.first().ownText());
                 topBucket.setCommentNum(cmmNum);
             }
             topBucket.setFetchTime(fetchDate);
-            Elements priceEls = ele.select("p.proPrice em[id^=price]");
+            Elements priceEls = ele.select("[id^=price]");
             if (!priceEls.isEmpty()) {
-                String sPrice = priceEls.first().ownText();
+                String sPrice = priceEls.first().text();
                 Matcher matcher = PRICE_REG.matcher(sPrice);
                 if (matcher.find()) {
                     topBucket.setPrice(Float.valueOf(matcher.group()));
                 }
             }
-            Elements titleEls = ele.select("p.proName.clearfix a[id^=pdlink][title][href][target]");
+            Elements titleEls = ele.select("a[id^=pdlink][title][href][target]");
             if (!titleEls.isEmpty()) {
                 topBucket.setProductUrl(titleEls.first().absUrl("href").trim());
                 topBucket.setTitle(titleEls.first().attr("title"));

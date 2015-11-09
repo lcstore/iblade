@@ -44,6 +44,9 @@ public class JdBestSaleSkuMain {
                 String cateName = unitArr[++index];
                 String level = unitArr[++index];
                 String crumb = unitArr[++index];
+                // if (!crumb.contains("个护化妆->")) {
+                // continue;
+                // }
                 JdBestSaleSkuWorker worker = new JdBestSaleSkuWorker(crumb, cateName,
                         cateUrl, level, destPath);
                 // worker.run();

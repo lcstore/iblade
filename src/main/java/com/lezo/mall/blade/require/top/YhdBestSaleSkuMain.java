@@ -44,6 +44,9 @@ public class YhdBestSaleSkuMain {
                 String cateName = unitArr[++index];
                 String level = unitArr[++index];
                 String crumb = unitArr[++index];
+                // if (!crumb.contains("美妆、个人护理、洗护->")) {
+                // continue;
+                // }
                 YhdBestSaleSkuWorker worker = new YhdBestSaleSkuWorker(crumb, cateName,
                         cateUrl, level, destPath);
                 urlCount++;
