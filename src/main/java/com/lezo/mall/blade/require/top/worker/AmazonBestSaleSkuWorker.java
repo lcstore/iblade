@@ -20,6 +20,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.lezo.mall.blade.common.SiteConstant;
 import com.lezo.mall.blade.require.top.po.TopBucket;
 
 public class AmazonBestSaleSkuWorker implements Runnable {
@@ -31,7 +32,7 @@ public class AmazonBestSaleSkuWorker implements Runnable {
     private String cateUrl;
     private String level;
     private String dirPath;
-    private Integer siteId = 10002;
+    private Integer siteId = SiteConstant.SITE_AMAZON;
 
     public AmazonBestSaleSkuWorker(String crumb, String cateName, String cateUrl, String level, String dirPath) {
         super();
@@ -69,7 +70,7 @@ public class AmazonBestSaleSkuWorker implements Runnable {
 
         List<TopBucket> totalList = new ArrayList<TopBucket>();
         int curNum = 1;
-        int maxPage = 3;
+        int maxPage = 5;
         while (curNum <= maxPage) {
             String sUrl = getPageUrl(cateUrl, curNum);
             Document dom = getDocument(sUrl, maxRetry);
@@ -83,6 +84,9 @@ public class AmazonBestSaleSkuWorker implements Runnable {
             for (TopBucket top : topBuckets) {
                 top.setPageNum(curNum);
                 totalList.add(top);
+            }
+            if (totalList.size() % 20 != 0 || totalList.size() >= 100) {
+                break;
             }
             curNum++;
         }

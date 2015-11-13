@@ -22,6 +22,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.lezo.mall.blade.common.SiteConstant;
 import com.lezo.mall.blade.require.top.po.TopBucket;
 
 public class YixunBestSaleSkuWorker implements Runnable {
@@ -33,7 +34,7 @@ public class YixunBestSaleSkuWorker implements Runnable {
     private String cateUrl;
     private String level;
     private String dirPath;
-    private Integer siteId = 10001;
+    private Integer siteId = SiteConstant.SITE_YIXUN;
     private int maxRetry = 5;
 
     public YixunBestSaleSkuWorker(String crumb, String cateName, String cateUrl, String level, String dirPath) {
@@ -73,6 +74,7 @@ public class YixunBestSaleSkuWorker implements Runnable {
                         .userAgent(
                                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:40.0) Gecko/20100101 Firefox/40.0")
                         .header("Accept-Encoding", "gzip, deflate, sdch")
+                        .header("Referer", url)
                         .header("Accept", "*/*")
                         .header("Cookie",
                                 "loc=2_1_310000_310100_310101_29313; prid=29313_2621; wsid=1; Hm_lvt_23bc0079ed4b2d06e5d5332ef5de1ec7=1444821395,1445333463; __jda=1982585.538562759.1442302572.1445335498.1445344965.7; visitkey=42984858774391402; y_guid=1404168C456CA400; __jdu=330eeb90-3c61-4f05-a8ae-74c8b0fa4128; __jdv=1982585%7Cbaidu%7C-%7Corganic%7Cnot%20set; y_source=1400000; Hm_lpvt_23bc0079ed4b2d06e5d5332ef5de1ec7=1445344965; __jdc=1982585; y_track=1400000-100087100-0-706131211012.3; y_rfid=22019971%7C7061312; __jdb=1982585.63.538562759%7C7.1445344965; rgStat=p%3Dsearch.51buy.com%26regionID1%3D2016%26regionID2%3D1005%26regionID3%3D2%26regionID4%3D%26siteid%3D1%26srcid%3D104%26spvid%3D1429848587743914021445344960725514168653%26uid%3D%26YTAG%3D3.706131211012%26referurl%3Dhttp%253A%252F%252Fsearchex.yixun.com%252F706124t706131-1-%252Fall%252F----1--2---------.html%26curPage%3D1%26ss%3D%26hitNum%3D122%26defCommNum%3D40%26defRowCommNum%3D4%26extraMsg%3D29313%26otherClick%3D1_0_%u70B9%u51FB%u6309%u9500%u91CF%u4ECE%u9AD8%u5230%u4F4E%u6392%u5E8F")
@@ -86,8 +88,7 @@ public class YixunBestSaleSkuWorker implements Runnable {
     public void run() {
         List<TopBucket> totalList = new ArrayList<TopBucket>();
         int curNum = 1;
-        int maxCount = 60;
-        cateUrl = "http://searchex.yixun.com/706124t706131-1-/";
+        int maxCount = 120;
         while (true) {
             String sUrl = getPageUrl(cateUrl, curNum);
             Document dom = getDocument(sUrl, maxRetry, Method.GET);

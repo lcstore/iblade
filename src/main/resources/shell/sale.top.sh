@@ -34,18 +34,25 @@ elif [[ $v_site"x" == "yixunx" ]]; then
 elif [[ $v_site"x" == "suningx" ]]; then
 	CATE_CLASS="com.lezo.mall.blade.require.top.SuningBestSaleListMain"
     SKU_CLASS="com.lezo.mall.blade.require.top.SuningBestSaleSkuMain"
+elif [[ $v_site"x" == "dangdangx" ]]; then
+	CATE_CLASS="com.lezo.mall.blade.require.top.DangBestSaleListMain"
+    SKU_CLASS="com.lezo.mall.blade.require.top.DangBestSaleSkuMain"
+elif [[ $v_site"x" == "gomex" ]]; then
+	CATE_CLASS="com.lezo.mall.blade.require.top.GomeBestSaleListMain"
+    SKU_CLASS="com.lezo.mall.blade.require.top.GomeBestSaleSkuMain"
 else
    echo "input a correct site,unkwon site:"$v_site
    exit 1
 fi
 JAR_DIR=$PWD"/blade.jar"
+LOG_PATH=$PWD"/logs/"$v_site".log"
 CATE_DEST_PATH=$PWD"/data/"$v_date"/"$v_site"/top/cate/"
 SKU_DEST_PATH=$PWD"/data/"$v_date"/"$v_site"/top/sku/"
 DEST_DATA_FILE=$PWD"/data/"$v_date"/"$v_site".sale.top."$v_date".data"
 
 CATE_LOG_PATH=$PWD"/logs/"$v_site".cate."$v_date".out"
 SKU_LOG_PATH=$PWD"/logs/"$v_site".sku."$v_date".out"
-EXEC_CMD="java -Xms256m -Xmx1024m  -Ddest=$CATE_DEST_PATH -cp $JAR_DIR $CATE_CLASS > $CATE_LOG_PATH"
+EXEC_CMD="java -Xms256m -Xmx1024m -Dlog_path=$LOG_PATH -Ddest=$CATE_DEST_PATH -cp $JAR_DIR $CATE_CLASS > $CATE_LOG_PATH"
 echo $EXEC_CMD
 eval $EXEC_CMD
 JOB_STATUS=$?
@@ -54,7 +61,7 @@ if [[ $JOB_STATUS -ne 0 ]]; then
 	exit 1;
 fi
 
-EXEC_CMD="java -Xms256m -Xmx1024m -Dsrc=$CATE_DEST_PATH  -Ddest=$SKU_DEST_PATH -cp $JAR_DIR $SKU_CLASS > $SKU_LOG_PATH"
+EXEC_CMD="java -Xms256m -Xmx1024m -Dlog_path=$LOG_PATH -Dsrc=$CATE_DEST_PATH  -Ddest=$SKU_DEST_PATH -cp $JAR_DIR $SKU_CLASS > $SKU_LOG_PATH"
 echo $EXEC_CMD
 eval $EXEC_CMD
 JOB_STATUS=$?

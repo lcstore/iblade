@@ -23,6 +23,7 @@ import org.jsoup.select.Elements;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.lezo.mall.blade.common.SiteConstant;
 import com.lezo.mall.blade.require.top.po.TopBucket;
 
 public class YhdBestSaleSkuWorker implements Runnable {
@@ -35,7 +36,7 @@ public class YhdBestSaleSkuWorker implements Runnable {
     private String cateUrl;
     private String level;
     private String dirPath;
-    private Integer siteId = 10004;
+    private Integer siteId = SiteConstant.SITE_YHD;
 
     public YhdBestSaleSkuWorker(String crumb, String cateName, String cateUrl, String level, String dirPath) {
         super();
@@ -78,8 +79,8 @@ public class YhdBestSaleSkuWorker implements Runnable {
     public void run() {
         List<TopBucket> totalList = new ArrayList<TopBucket>();
         int curNum = 1;
-        int maxRank = 60;
-        // cateUrl = "http://list.yhd.com/c6626-0-84389//";
+        int maxRank = 120;
+        // cateUrl = "http://list.yhd.com/ctg/s2/c22882-0/b/a101419-s1-v0-p1-price-d0-f0-m1-rt0-pid-mid0-k//";
         while (true) {
             String sUrl = cateUrl;
             sUrl = turnUrl(sUrl);
@@ -148,8 +149,18 @@ public class YhdBestSaleSkuWorker implements Runnable {
                     totalList.add(top);
                     top.setRankNum(totalList.size());
                 }
+            } else {
+                break;
             }
-            break;
+            if (totalList.size() >= maxRank) {
+                break;
+            }
+            Elements nextEls = dom.select("a[href].page_next");
+            if (nextEls.isEmpty()) {
+                break;
+            } else {
+                cateUrl = nextEls.first().absUrl("href");
+            }
         }
 
         String fileName = crumb.trim().replace("\\/", "-").replace(AmazonBestSaleListWorker.CODE_SEPERATOR, "_");
@@ -166,7 +177,8 @@ public class YhdBestSaleSkuWorker implements Runnable {
                 log.info("fetch cate:" + cateName + ",level:" + level + ",count:" + totalList.size()
                         + ",toFile:" + destFile + ",len:" + dataString.length());
             } else {
-                log.warn("fetch empty.cate:" + cateName + ",level:" + level + ",count:" + totalList.size());
+                log.warn("fetch empty.cate:" + cateName + ",url:" + cateUrl + ",level:" + level + ",count:"
+                        + totalList.size());
             }
         } catch (Exception e) {
             e.printStackTrace();

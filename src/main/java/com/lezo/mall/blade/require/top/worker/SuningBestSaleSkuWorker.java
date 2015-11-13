@@ -30,18 +30,18 @@ import org.jsoup.select.Elements;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.lezo.mall.blade.common.SiteConstant;
 import com.lezo.mall.blade.require.top.po.TopBucket;
 
 public class SuningBestSaleSkuWorker implements Runnable {
     private Logger log = Logger.getLogger(SuningBestSaleSkuWorker.class);
     private static final Pattern NUM_REG = Pattern.compile("[0-9]+");
-    private static final Pattern PRICE_REG = Pattern.compile("[0-9.]+");
     private String crumb;
     private String cateName;
     private String cateUrl;
     private String level;
     private String dirPath;
-    private Integer siteId = 10005;
+    private Integer siteId = SiteConstant.SITE_SUNING;
     private int maxRetry = 3;
 
     public SuningBestSaleSkuWorker(String crumb, String cateName, String cateUrl, String level, String dirPath) {
@@ -86,7 +86,7 @@ public class SuningBestSaleSkuWorker implements Runnable {
 
         List<TopBucket> totalList = new ArrayList<TopBucket>();
         int curNum = 1;
-        int maxPage = 2;
+        int maxPage = 4;
         while (curNum <= maxPage) {
             String sUrl = getPageUrl(cateUrl, curNum);
             cateUrl = sUrl;

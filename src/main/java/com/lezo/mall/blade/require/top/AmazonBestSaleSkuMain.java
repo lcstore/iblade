@@ -46,9 +46,9 @@ public class AmazonBestSaleSkuMain {
                 String crumb = unitArr[++index];
                 AmazonBestSaleSkuWorker worker = new AmazonBestSaleSkuWorker(crumb, cateName,
                         cateUrl, level, destPath);
-                // worker.run();
-                exec.execute(worker);
                 urlCount++;
+                exec.execute(worker);
+                // worker.run();
                 // return;
             }
             waitForDone(exec);

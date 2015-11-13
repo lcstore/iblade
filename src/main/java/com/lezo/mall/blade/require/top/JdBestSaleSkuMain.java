@@ -49,9 +49,10 @@ public class JdBestSaleSkuMain {
                 // }
                 JdBestSaleSkuWorker worker = new JdBestSaleSkuWorker(crumb, cateName,
                         cateUrl, level, destPath);
-                // worker.run();
-                exec.execute(worker);
                 urlCount++;
+                exec.execute(worker);
+                // worker.run();
+                // return;
             }
             waitForDone(exec);
             count++;

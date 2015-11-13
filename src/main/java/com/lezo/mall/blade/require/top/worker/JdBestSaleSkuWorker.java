@@ -27,6 +27,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.lezo.mall.blade.common.SiteConstant;
 import com.lezo.mall.blade.require.top.po.TopBucket;
 
 public class JdBestSaleSkuWorker implements Runnable {
@@ -38,7 +39,7 @@ public class JdBestSaleSkuWorker implements Runnable {
     private String cateUrl;
     private String level;
     private String dirPath;
-    private Integer siteId = 10000;
+    private Integer siteId = SiteConstant.SITE_JD;
     private int maxRetry = 5;
 
     public JdBestSaleSkuWorker(String crumb, String cateName, String cateUrl, String level, String dirPath) {
@@ -99,7 +100,8 @@ public class JdBestSaleSkuWorker implements Runnable {
     public void run() {
         List<TopBucket> totalList = new ArrayList<TopBucket>();
         int curNum = 1;
-        int maxPage = 1;
+        int maxPage = 2;
+        int pageSize = 60;
         while (curNum <= maxPage) {
             String sUrl = getPageUrl(cateUrl, curNum);
             Document dom = getDocument(sUrl, maxRetry, Method.GET);
@@ -107,8 +109,12 @@ public class JdBestSaleSkuWorker implements Runnable {
             for (TopBucket top : topBuckets) {
                 top.setPageNum(curNum);
                 totalList.add(top);
+                top.setRankNum(totalList.size());
             }
             addPrices(topBuckets);
+            if (topBuckets.size() < pageSize) {
+                break;
+            }
             curNum++;
         }
 
@@ -200,11 +206,9 @@ public class JdBestSaleSkuWorker implements Runnable {
         List<TopBucket> dataList = new ArrayList<TopBucket>();
         Integer pageNum = 0;
         Date fetchDate = new Date();
-        int rankNum = 0;
         Integer curNum = null;
         for (Element ele : rowEls) {
             TopBucket topBucket = new TopBucket();
-            topBucket.setRankNum(++rankNum);
             topBucket.setFromUrl(dom.baseUri());
             topBucket.setCrumb(this.crumb);
             topBucket.setPageNum(pageNum);

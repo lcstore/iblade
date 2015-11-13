@@ -1,7 +1,6 @@
 package com.lezo.mall.blade.require.top;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -10,17 +9,12 @@ import java.util.concurrent.TimeUnit;
 import lombok.extern.log4j.Log4j;
 
 import org.apache.commons.io.FileUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import com.lezo.mall.blade.require.top.po.CategoryElement;
 import com.lezo.mall.blade.require.top.worker.YhdBestSaleSkuWorker;
 
 @Log4j
 public class YhdBestSaleSkuMain {
-    private static String CODE_SEPERATOR = "->";
 
     public static void main(String[] args) throws Exception {
         String srcPath = System.getProperty("src", "./data/yhd/top/cate/");
@@ -79,39 +73,6 @@ public class YhdBestSaleSkuMain {
         }
         for (CategoryElement child : cce.getChildren()) {
             getLeafs(child, leafList);
-        }
-    }
-
-    private static void addChildren(CategoryElement parent) throws Exception {
-        String url = parent.getUrl();
-        System.err.println(parent.getName() + ",level:" + parent.getLevel() + ",url:" + url);
-        Document dom =
-                Jsoup.connect(url)
-                        .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:40.0) Gecko/20100101 Firefox/40.0")
-                        .get();
-        Elements curEls = dom.select("#zg_browseRoot span.zg_selected");
-        if (curEls.isEmpty()) {
-            return;
-        }
-        Elements ceEls =
-                curEls.first().parent().parent().select("ul li a[href*=www.amazon.cn/gp/bestsellers]");
-        if (ceEls.isEmpty()) {
-            return;
-        }
-        List<CategoryElement> children = new ArrayList<CategoryElement>();
-        parent.setChildren(children);
-        for (Element ce : ceEls) {
-            CategoryElement element = new CategoryElement();
-            element.setName(ce.ownText().trim());
-            element.setUrl(ce.absUrl("href"));
-            element.setLevel(parent.getLevel() + 1);
-            if (parent.getCode() == null) {
-                element.setCode(element.getName());
-            } else {
-                element.setCode(parent.getCode() + CODE_SEPERATOR + element.getName());
-            }
-            children.add(element);
-            addChildren(element);
         }
     }
 }
